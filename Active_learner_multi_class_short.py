@@ -13,13 +13,13 @@
 3. Save df and model as "ActiveLearner" class and set parameters
 
 4.(A) Run function "oracle_query" to label the samples in the df and update the model
-    ->"oracle_query" use the following functions:
-    5.  "ActiveLearner.get_next_batch_for_labeling" - A method which find the samples with the lowest reaults in the df
+    ->"oracle_query" - use the following functions:
+    5.  "ActiveLearner.get_next_batch_for_labeling" - A method which find the samples with the lowest scores in the df
         and output them as a batch
-        ->"ActiveLearner.get_next_batch_for_labeling" use the following functions:
+        ->"ActiveLearner.get_next_batch_for_labeling" - use the following functions:
         6. "ActiveLearner.predict" - Iterates over the df with the model in order to improve the model and
             predict the prob of the df
-            -> "ActiveLearner.predict"use the following functions:
+            -> "ActiveLearner.predict" - use the following functions:
             7."ActiveLearner.fit"- a method which fit the model to the new X and Y
         8."get_data_for_model" - Receives a df and clean it from the column predictions and predictions_prob
             columns and returns it as X and y
@@ -27,7 +27,7 @@
     ->"run_performance_analysis" use the following functions:
     10. "pr_auc" - display an PR AUC graph and its metrics
     11. "roc_auc" - display an ROC AUC graph and its metrics
-12.(C) Run the method ActiveLeraner.exit_or_save to let the oracle decide if to stop and/or save or to continue to label
+12.(C) Run the method ActiveLeraner.exit_or_save to let the oracle decide if to stop and/or save the model and or to continue to label
 
 13. if needed, continue to iterate over steps A-C as needed.
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~`
@@ -64,12 +64,12 @@ def oracle_query (df, true_label_col='true_label'): #df is the batch received fr
         oracle_answer=input("Label: ")
         print ("Your answer is ", oracle_answer, "do you wish to proceed or to correct yor answer?") #verify that the right answer was inputed
         correct_answer = input ("""If label is correct type "Y" if you wish to correct it type "N" """)
-        if not correct_answer in ["Y","y","N","n"]:
+        while not correct_answer in ["Y","y","N","n"]:
             correct_answer = input("""Please answer again: if label is correct type "Y", if you wish to correct it type "N" """)
         if correct_answer in ["N","n"]:
             oracle_answer = input("Correct Label: ")
 
-        current_batch[i,true_label_col]=oracle_answer # inter the input to the right label column
+        current_batch[i][true_label_col]=oracle_answer # enter the input to the right label column
 
     df = df.combine_first(current_batch) #merge the results of new trur label back to the original df
 
@@ -134,9 +134,9 @@ def roc_auc(y_true, y_pred, n_classes):
 def run_performance_analysis (df, true_label_col='true_label'):
     org_df = df.copy()
     df_sub = org_df[org_df[true_label_col] != None] # keep only sample which have true label
-    labels = np.unique(df_sub[true_label_col]) #see above
+    labels = np.unique(df_sub[true_label_col])
     pred_prob_col = [str("prediction_proba_" + x) for x in labels] #see above
-    Y_pred = df_sub[pred_prob_col]  # All the diffrent label prediction probabilities columns
+    Y_pred = df_sub[pred_prob_col]  # All the different label prediction probabilities columns
     y_true = df_sub[true_label_col] # The labels column
     # Use label_binarize to be multi-label like settings
     Y_true = label_binarize(y_true, classes=labels) #binarize Labels column
@@ -205,7 +205,7 @@ class ActiveLearner:
             # exit without saving
         else
             pass
-    return (pass)
+    return (self, df)
 
 
 
