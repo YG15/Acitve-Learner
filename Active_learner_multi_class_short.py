@@ -7,9 +7,17 @@
 
 """
 ~~~~~~~~~~~~~~~~~~~~~~~~~Work Flow~~~~~~~~~~~~~~~~~~~~~
+<<<<<<< HEAD
 1. Upload data as panda's data frame (df)
 2. Upload previous model (if such exist)
 3. Save df and model as "ActiveLearner" class and set parameters
+=======
+
+1. Upload data as panda's data frame (df)
+2. Upload previous model (if such exist)
+3. Save df and model as "ActiveLearner" class and set parameters
+
+>>>>>>> parent of a31b304... Add files via upload
 4.(A) Run function "oracle_query" to label the samples in the df and update the model
     ->"oracle_query" - use the following functions:
     5.  "ActiveLearner.get_next_batch_for_labeling" - A method which find the samples with the lowest scores in the df
@@ -26,8 +34,15 @@
     10. "pr_auc" - display an PR AUC graph and its metrics
     11. "roc_auc" - display an ROC AUC graph and its metrics
 12.(C) Run the method ActiveLeraner.exit_or_save to let the oracle decide if to stop and/or save the model and or to continue to label
+<<<<<<< HEAD
 13. if needed, continue to iterate over steps A-C as needed.
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~`
+=======
+
+13. if needed, continue to iterate over steps A-C as needed.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~`
+
+>>>>>>> parent of a31b304... Add files via upload
 """
 
 import pandas as pd
@@ -202,3 +217,9 @@ class ActiveLearner:
         else
             pass
     return (self, df)
+<<<<<<< HEAD
+=======
+
+
+
+>>>>>>> parent of a31b304... Add files via upload
