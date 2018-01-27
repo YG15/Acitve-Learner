@@ -1,6 +1,6 @@
 ###############Active_learner_multi_class############
 # Authors: Omri Allouche  & Yonathan Guttel
-# Date: 14.01.2018
+# Date: 01.01.2018
 # Description: Draft work for Text active learner
 #####################################################
 
@@ -10,8 +10,6 @@
 1. Upload data as panda's data frame (df)
 2. Upload previous model (if such exist)
 3. Save df and model as "ActiveLearner" class and set parameters
-
->>>>>>> parent of a31b304... Add files via upload
 4.(A) Run function "oracle_query" to label the samples in the df and update the model
     ->"oracle_query" - use the following functions:
     5.  "ActiveLearner.get_next_batch_for_labeling" - A method which find the samples with the lowest scores in the df
@@ -42,10 +40,8 @@ from sklearn.metrics import roc_curve, auc
 
 
 def get_data_for_model(df, true_label_col='true_label'):
-    # get uniques labels
-    labels=np.unique(df[true_label_col])
-    # create a vector of col names to store each label probability
-    pred_prob_col= [str("prediction_proba_"+x) for x in labels]
+    labels=np.unique(df[true_label_col]) #get uniques labels
+    pred_prob_col= [str("prediction_proba_"+x) for x in labels] #create a vector of col names to store each label probability
     cols_to_remove = set(['predictions', pred_prob_col, true_label_col])
     cols_to_keep = [c for c in df.columns if c not in cols_to_remove]
     X = df[cols_to_keep]
@@ -56,25 +52,22 @@ def get_data_for_model(df, true_label_col='true_label'):
 
     return (X, y)
 
-def oracle_query (df, true_label_col='true_label'):
-    # df is the batch received from method "get_next_batch"
-    # Extract the x samples with the lowest pred_prob values
-    current_batch=get_next_batch_for_labeling(df, batch_size=10)
+def oracle_query (df, true_label_col='true_label'): #df is the batch received from method "get_next_batch"
+    current_batch=get_next_batch_for_labeling(df, batch_size=10) #estract the x samples with the lowest pred_prob values
     for i in range(batch_size):
         print ("Please type the correct label of the following sample: ", end="")
         print (current_batch[i])
         oracle_answer=input("Label: ")
-        # Verify that the right answer was inputted
-        print ("Your answer is ", oracle_answer, "do you wish to proceed or to correct yor answer?")
+        print ("Your answer is ", oracle_answer, "do you wish to proceed or to correct yor answer?") #verify that the right answer was inputed
         correct_answer = input ("""If label is correct type "Y" if you wish to correct it type "N" """)
         while not correct_answer in ["Y","y","N","n"]:
             correct_answer = input("""Please answer again: if label is correct type "Y", if you wish to correct it type "N" """)
         if correct_answer in ["N","n"]:
             oracle_answer = input("Correct Label: ")
-        # enter the input to the right label column
-        current_batch[i][true_label_col]=oracle_answer
-        # merge the results of new trur label back to the original df
-    df = df.combine_first(current_batch)
+
+        current_batch[i][true_label_col]=oracle_answer # enter the input to the right label column
+
+    df = df.combine_first(current_batch) #merge the results of new trur label back to the original df
 
     return (df)
 
@@ -136,17 +129,13 @@ def roc_auc(y_true, y_pred, n_classes):
 
 def run_performance_analysis (df, true_label_col='true_label'):
     org_df = df.copy()
-    # Keep only sample which have true label
-    df_sub = org_df[org_df[true_label_col] != None]
+    df_sub = org_df[org_df[true_label_col] != None] # keep only sample which have true label
     labels = np.unique(df_sub[true_label_col])
-    pred_prob_col = [str("prediction_proba_" + x) for x in labels]
-    # All the different label prediction probabilities columns
-    Y_pred = df_sub[pred_prob_col]
-    # The labels column
-    y_true = df_sub[true_label_col]
+    pred_prob_col = [str("prediction_proba_" + x) for x in labels] #see above
+    Y_pred = df_sub[pred_prob_col]  # All the different label prediction probabilities columns
+    y_true = df_sub[true_label_col] # The labels column
     # Use label_binarize to be multi-label like settings
-    # Binarize Labels column
-    Y_true = label_binarize(y_true, classes=labels)
+    Y_true = label_binarize(y_true, classes=labels) #binarize Labels column
     n_classes = len(labels)
 
     pr_auc(Y_true, Y_pred, n_classes)
@@ -198,8 +187,7 @@ class ActiveLearner:
     def get_next_batch_for_labeling(self, df, batch_size=10):
         X, _ = get_data_for_model(df)
         df = self.predict(X)
-        # Sort rows by confidence
-        sorted = df.sort_values('predictions_proba')
+        sorted = df.sort_values('predictions_proba')  # sort rows by confidence
         return sorted.head(batch_size)
 
     def exit_and_save(self, df):
@@ -214,4 +202,3 @@ class ActiveLearner:
         else
             pass
     return (self, df)
-

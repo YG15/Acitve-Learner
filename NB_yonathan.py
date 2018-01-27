@@ -37,8 +37,7 @@ def get_data(file_name, binerize=False):
 
     df = pd.read_csv(file_name, delimiter="\t", header=None, names=["label", "text"])
     target = df['label']
-    # in case we want to binarize results
-    if binerize == True:  
+    if binerize == True:  # in case we want to binarize results
         classes = np.unique(target)
         target = label_binarize(target, classes=classes)
     data = df.iloc[:, -1]
@@ -51,8 +50,8 @@ def tokenize(text):
     # stemmed_text = [stemmer.stem(x).lower()) for x in tokened_text]  #Is it needed?
     return (tokened_text)  # return(stemmed_text)
 
-# set the priors of the classes for the MNB classifier
-def priors(labels):  
+
+def priors(labels):  # set the priors of the classes for the MNB classifier
     classes_names = np.unique(labels)
     n_class = len(classes_names)
     priors = {}
@@ -60,22 +59,21 @@ def priors(labels):
         priors[c] = (Counter(labels)[c]) / n_class
     return (priors)
 
-# Calculating tokens probabilities
-def likelihoods(tokened_text, labels, smoothing_val=1, test_text=[]):  
+
+def likelihoods(tokened_text, labels, smoothing_val=1, test_text=[]):  # tokens probabilities
     classes_names = np.unique(labels)
     classes_data = {}
     likelihood = defaultdict(dict)
-    # The following is done to prevent a bug in which during prediction step a show up in the test a word which does not have a measured probability
-    combined_text = tokened_text + test_text  
+    combined_text = tokened_text + test_text  # This is done to prevent a bug in which during prediction step a show up in the test a word which does not have a measured probability
     voc_words = set([item for sublist in combined_text for item in sublist])
     voc_size = len(voc_words)
     for c in classes_names:
         classes_data[c] = list(compress(tokened_text, list(labels == c)))
         flat_list = [item for sublist in classes_data[c] for item in sublist]
         flat_list_length = len(flat_list)
-        # Calculating probability for each words in each class
         for w in voc_words:
-            likelihood[c][w] = (flat_list.count(w) + smoothing_val) / (flat_list_length + voc_size)  
+            likelihood[c][w] = (flat_list.count(w) + smoothing_val) / (
+                    flat_list_length + voc_size)  # claculating probability for each words in each class
     return (likelihood)
 
 
